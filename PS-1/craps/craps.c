@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 	//         exec system call. Using the function sprintf and the arg1 
 	//         variable you can pass the id parameter to the children 
 
-	char arg0[] = "./shooter";
+	char arg0[] = "shooter";
 	char arg1[10];
 	char *args[] = {arg0, arg1, NULL};
 	
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
               exit(EXIT_FAILURE);
             }
             sprintf(arg1, "%d", i);
-            execv(args[0], args);
+            execvp(args[0], args);
           }
           
         }
@@ -158,11 +158,16 @@ int main(int argc, char *argv[])
 	// TODO 9: cleanup resources and exit with success
 	//         wait for all the players/children to exit
 	//         before game master exits 
-
+        pid_t ret[NUM_PLAYERS];
+       
 	for (i = 0; i < NUM_PLAYERS; i++) {
-          wait(NULL);
+          ret[i] = wait(NULL);
 
 	}
+
+        /* for (i = 0; i< NUM_PLAYERS; i++){ */
+        /*   printf("ID%d=%d\n", i, ret[i]); */
+        /* } */
         for (i = 0; i<NUM_PLAYERS;i++){
           printf("player %d with id %d\n",i, pid[i]);
         }

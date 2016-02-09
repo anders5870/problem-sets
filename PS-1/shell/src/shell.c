@@ -82,6 +82,7 @@ int main(void) {
 
     for (int i = 0; i < num_of_children; i ++) {
       // TODO 1: Make the parent wait for all children. 
+      wait(NULL);
     }
 
 
@@ -145,7 +146,7 @@ int execute_command_line(char *line, char *argv[]) {
 
     num_of_commands++;
 
-    // The previous rigth pipe now becomes the current left pipe.
+    // The previous right pipe now becomes the current left pipe.
     shift_pipes(left_pipe, right_pipe);
 
     
