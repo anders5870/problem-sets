@@ -1,0 +1,46 @@
+	for (i = 0; i < NUM_PLAYERS; i++) {
+          switch(pid[i] = fork()){
+          case -1:
+            perror("fork");
+            exit(EXIT_FAILURE);
+          case 0:
+            /* close(seedPipes[i][1]); */
+            /* close(scorePipes[i][0]); */
+            /* for(j = 0; j<NUM_PLAYERS;j++){ */
+            /*   if(j!=i){ */
+            /*     close(seedPipes[j][0]); */
+            /*     close(seedPipes[j][1]); */
+            /*     close(scorePipes[j][0]); */
+            /*     close(scorePipes[j][1]); */
+            /*   } */
+            /* } */
+            printf("\nbefore dup2: pid[%d] = %d, mypid=%d", i, pid[i], getpid());
+            if (dup2(STDIN_FILENO,seedPipes[i][0]) < 0){
+              perror("dup2 seedpipe");
+              exit(EXIT_FAILURE);
+            }
+            if (dup2(STDOUT_FILENO,scorePipes[i][1]) < 0){
+              perror("dup2 scorepipe");
+              exit(EXIT_FAILURE);
+            }
+            sprintf(arg1, "%d", i);
+            printf(", i: %d\n", i);
+            execv(argv[0], args);
+            printf("aldrig här");
+            /* shooter(i, -666,-666); */
+            /* while (1) {}; */
+          default:
+            printf("Parent pid: %d", getpid());
+            
+            //close pfd's of the game master
+            /* for (k = 0; k<NUM_PLAYERS;k++){ */
+            /*   close(seedPipes[k][0]); */
+            /*   close(scorePipes[k][1]); */
+            /* } */
+            
+            //k++;
+          }
+          
+	}
+        //printf("%d\n",k);
+

@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 
         int seedPipes[NUM_PLAYERS][2];
         int scorePipes[NUM_PLAYERS][2];
-        
+
 
 
 	// TODO 3: initialize the communication with the players, i.e. create the pipes
@@ -60,74 +60,60 @@ int main(int argc, char *argv[])
                perror("scorepipe");
                exit(EXIT_FAILURE);
            }
-          printf("seedpipes [%d] %d\n", i, seedPipes[i]);
-	}
-        
+   	}
+
+
 
 	// TODO 4: spawn/fork the processes that simulate the players
 	//         - check if players were successfully spawned
 	//         - is it needed to store the pid of the players? Which data structure to use for this?
 	//         - re-direct standard-inputs/-outputs of the players
 	//         - use execv to start the players
-	//         - pass arguments using args and sprintf????
-
-        pid_t pid[NUM_PLAYERS];int j; int k=0;
+	//         - pass arguments using args and sprintf
         
-	for (i = 0; i < NUM_PLAYERS; i++) {
-          switch(pid[i] = fork()){
-          case -1:
+        
+        pid_t pid[NUM_PLAYERS];int j; int k=0; ;
+        
+        for (i = 0; i < NUM_PLAYERS; i++){
+          pid[i] = fork();
+          if (pid[i] == -1){
             perror("fork");
             exit(EXIT_FAILURE);
-          case 0:
-            printf("barn \n"); 
-            /* close(seedPipes[i][1]); */
-            /* close(scorePipes[i][0]); */
-            /* for(j = 0; j<NUM_PLAYERS;j++){ */
-            /*   if(j!=i){ */
-            /*     close(seedPipes[j][0]); */
-            /*     close(seedPipes[j][1]); */
-            /*     close(scorePipes[j][0]); */
-            /*     close(scorePipes[j][1]); */
-            /*   } */
-            /* } */
-            puts("before dup2");
-            printf("i: %d\n", i);
-            if (dup2(seedPipes[i][0],STDIN_FILENO) < 0){
-              perror("dup2 seedpipe");
+          }
+          if (pid[i] == 0){
+            pid[i] = getpid();
+
+            close(seedPipes[i][1]);
+            close(scorePipes[i][0]);
+            for(j = 0; j<NUM_PLAYERS;j++){
+              if(j!=i){
+                close(seedPipes[j][0]);
+                close(seedPipes[j][1]);
+                close(scorePipes[j][0]);
+                close(scorePipes[j][1]);
+              }
+            }
+
+            if (dup2(seedPipes[i][0], STDIN_FILENO) == -1) {
+              perror("seedpipe");
               exit(EXIT_FAILURE);
             }
-            if (dup2(scorePipes[i][1],STDOUT_FILENO) < 0){
-              perror("dup2 scorepipe");
+            if (dup2(scorePipes[i][1], STDOUT_FILENO) == -1) {
+              perror("scorepipe");
               exit(EXIT_FAILURE);
             }
-            puts("\nsprintf");
             sprintf(arg1, "%d", i);
-            printf("i: %d\n", i);
-            execv(argv[0], args);
-
-
-            printf("aldrig här");
-            /* shooter(i, -666,-666); */
-            /* while (1) {}; */
-          default:
-            printf("Parent pid: %d \n", getpid());
-            
-            //close pfd's of the game master
-            for (k = 0; k<NUM_PLAYERS;k++){
-              close(seedPipes[k][0]);
-              close(scorePipes[k][1]);
-            }
-            
-            //k++;
+            execv(args[0], args);
           }
           
-	}
-        //printf("%d\n",k);
-
+        }
+        for (k = 0; k<NUM_PLAYERS;k++){
+          close(seedPipes[k][0]);
+          close(scorePipes[k][1]);
+        }
 
 	seed = time(NULL);
-
-
+        
 	for (i = 0; i < NUM_PLAYERS; i++) {
 		seed++;
 		// TODO 5: send the seed to the players (write using pipes)
@@ -149,7 +135,7 @@ int main(int argc, char *argv[])
 	}
 
 
-	printf("master: player %d WINS\n", winner);
+	printf("master: player %d WINS\n", winid);
 
 
 	// TODO 7: signal the winner
