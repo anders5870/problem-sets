@@ -41,7 +41,7 @@ void fork_child(enum cmd_pos pos, int left_pipe[], int right_pipe[], char *argv[
  */
 void shift_pipes(int left_pipe[], int right_pipe[]);
 
-/* The parent must close un-used pipe descritpors, otherwise children
+/* The parent must close un-used pipe descriptors, otherwise children
  * may not detect enf-of-life (EOF).
  */
 void parent_close_pipes(enum cmd_pos pos, int left_pipe[], int right_pipe[]);
