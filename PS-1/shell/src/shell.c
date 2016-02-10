@@ -220,21 +220,20 @@ void fork_child(enum cmd_pos pos, int left_pipe[], int right_pipe[], char *argv[
 
 }
 
-
+// Solution made it evident that it is unnecessary to pass left_pipe argument!
 void parent_close_pipes(enum cmd_pos pos, int left_pipe[], int right_pipe[]) {
   // Reading an empty pipe, with no writer attached ===> EOF is returned.
   // TODO 3: The parent must close un-used pipe descriptors. You need
   // to figure out wich descriptors that must be closed when.
 
   if (pos == first){
-    close(right_pipe[0]);
+    close(right_pipe[1]);
   }
   if (pos == middle){
-    close(left_pipe[1]);
-    close(right_pipe[0]);
+    close(right_pipe[1]);
   }
   if (pos == last){
-    close(left_pipe[1]);
+    //do nothing
   }
   if (pos == single){
     //do nothing
@@ -272,7 +271,6 @@ void child_redirect_io(enum cmd_pos pos, int left_pipe[], int right_pipe[]) {
     }
   }
   if (pos == last){
-
     if (dup2(left_pipe[0],STDIN_FILENO) == -1){
       perror("======= ERROR ====> dup2 for pos=last failed. :(");
       exit(EXIT_FAILURE);
