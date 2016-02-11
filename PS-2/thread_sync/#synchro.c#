@@ -11,7 +11,6 @@
 #include <stdio.h>     /* printf(), fprintf() */
 #include <stdlib.h>    /* abort() */
 #include <pthread.h>   /* pthread_... */
-//#include <semaphore.h> /* semaphore */ //HMMM....Is this needed for TODO 2 ???????????
 #include "timing.h"
 
 /* Number of threads that will increment the shared variable */
@@ -29,7 +28,7 @@
 #define DEC_ITERATIONS (INC_ITERATIONS * INC_THREADS * INCREMENT / DEC_THREADS / DECREMENT)
 
 volatile int counter;
-//volatile sem_t sem; /* semaphore */ //HMMM....Is this neededfor TODO 2??????
+
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -82,7 +81,7 @@ inc_cas(void *arg __attribute__((unused)))
     /* TODO 2: Use the compare and swap primitive to manipulate the shared
      * variable */
     for (i = 0; i < INC_ITERATIONS; i++) {
-        if (counter<0)
+        if (counter<0) //this is the only thing I added to make it work
             counter += INCREMENT; // You need to replace this
     }
 
@@ -97,7 +96,7 @@ dec_cas(void *arg __attribute__((unused)))
     /* TODO 2: Use the compare and swap primitive to manipulate the shared
      * variable */
     for (i = 0; i < DEC_ITERATIONS; i++) {
-        if (counter>0)
+        if (counter>) //this is the only thing I added to make it work
             counter += DECREMENT; // You need to replace this
     }
 
