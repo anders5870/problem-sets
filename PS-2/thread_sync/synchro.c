@@ -11,7 +11,7 @@
 #include <stdio.h>     /* printf(), fprintf() */
 #include <stdlib.h>    /* abort() */
 #include <pthread.h>   /* pthread_... */
-
+//#include <semaphore.h> /* semaphore */ //HMMM....Is this needed for TODO 2 ???????????
 #include "timing.h"
 
 /* Number of threads that will increment the shared variable */
@@ -29,18 +29,28 @@
 #define DEC_ITERATIONS (INC_ITERATIONS * INC_THREADS * INCREMENT / DEC_THREADS / DECREMENT)
 
 volatile int counter;
+//volatile sem_t sem; /* semaphore */ //HMMM....Is this neededfor TODO 2??????
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /* Access to the shared counter should be protected by a mutex */
+/* what attrubute means: */
+/* https://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html */
+
 void *
 inc_mutex(void *arg __attribute__((unused)))
 {
     int i;
 
     /* TODO 1: Protect access to the shared variable */
+    /*take a look at 
+      http://stackoverflow.com/questions/14840135/synchronizing-two-pthreads-using-mutex-in-c
+      for example usage of lock and unlock
+    */
     for (i = 0; i < INC_ITERATIONS; i++) {
+        pthread_mutex_lock(&mutex);
         counter += INCREMENT;
+        pthread_mutex_unlock(&mutex);
     }
 
     return NULL;
@@ -53,7 +63,9 @@ dec_mutex(void *arg __attribute__((unused)))
 
     /* TODO 1: Protect access to the shared variable */
     for (i = 0; i < DEC_ITERATIONS; i++) {
+        pthread_mutex_lock(&mutex);
         counter -= DECREMENT;
+        pthread_mutex_unlock(&mutex);
     }
 
     return NULL;
