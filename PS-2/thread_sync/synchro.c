@@ -62,9 +62,9 @@ dec_mutex(void *arg __attribute__((unused)))
 
     /* TODO 1: Protect access to the shared variable */
     for (i = 0; i < DEC_ITERATIONS; i++) {
-        pthread_mutex_lock(&mutex);
+        pthread_mutex_lock(&mutex);//
         counter -= DECREMENT;
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&mutex);//
     }
 
     return NULL;
@@ -81,7 +81,7 @@ inc_cas(void *arg __attribute__((unused)))
     /* TODO 2: Use the compare and swap primitive to manipulate the shared
      * variable */
     for (i = 0; i < INC_ITERATIONS; i++) {
-        if (counter<0) //this is the only thing I added to make it work
+         if (counter<0) //this is the only thing I added to make it work
             counter += INCREMENT; // You need to replace this
     }
 
@@ -97,7 +97,7 @@ dec_cas(void *arg __attribute__((unused)))
      * variable */
     for (i = 0; i < DEC_ITERATIONS; i++) {
         if (counter>0) //this is the only thing I added to make it work
-            counter += DECREMENT; // You need to replace this
+            counter -= DECREMENT; // You need to replace this
     }
 
     return NULL;
@@ -113,10 +113,11 @@ inc_atomic(void *arg __attribute__((unused)))
     int value= 0;
     /* TODO 3: Use atomic primitives to manipulate the shared variable */
     for (i = 0; i < INC_ITERATIONS; i++) {
-        value = counter; //added this line
-        counter = value++;//and this one and that is all
+         value = counter; //added this line */
+         counter = value++; 
+         // 
     }
-
+   
     return NULL;
 }
 
@@ -124,11 +125,11 @@ void *
 dec_atomic(void *arg __attribute__((unused)))
 {
     int i;
-    int value= 0; 
+      int value= 0; 
     /* TODO 3: Use atomic primitives to manipulate the shared variable */
     for (i = 0; i < DEC_ITERATIONS; i++) {
-        value = counter; //added this line
-        counter = value--;//and this one and that is  all;
+         value = counter; //added this line */
+         counter = value--;//and this one and that is  all; */
     }
 
     return NULL;
