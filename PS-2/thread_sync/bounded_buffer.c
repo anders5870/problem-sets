@@ -27,6 +27,10 @@ typedef struct {
     int next_in, next_out;
 } buffer_t;
 
+sem_t full;
+sem_t empty;
+sem_t mutex;
+unsigned int seedp;            
 
 buffer_t buffer;
 
@@ -43,11 +47,17 @@ insert_item(int item)
     /* TODO: Check and wait if the buffer is full. Ensure exclusive
      * access to the buffer and use the existing code to remove an item.
      */
-
+    sem_wait(&empty);
+    sem_wait(&mutex);
+    seedp = time(NULL);
+    sleep(rand_r(&seedp) % 5 + 1);
 
     buffer.value[buffer.next_in] = item;
     buffer.next_in = (buffer.next_in + 1) % BUFFER_SIZE;
-
+ 
+    
+    sem_post(&mutex);
+    sem_post(&full); 
 
     return 0;
 }
@@ -63,11 +73,20 @@ remove_item(int *item)
     /* TODO: Check and wait if the buffer is empty. Ensure exclusive
      * access to the buffer and use the existing code to remove an item.
      */
+    seedp = time(NULL);
 
+  
+   sem_wait(&full);
+   sem_wait(&mutex);
+
+    sleep(rand_r(&seedp) % 5 + 1);
 
     *item = buffer.value[buffer.next_out];
     buffer.value[buffer.next_out] = -1;
     buffer.next_out = (buffer.next_out + 1) % BUFFER_SIZE;
+
+    sem_post(&mutex);    
+    sem_post(&empty);
 
     return 0;
 }
@@ -130,6 +149,10 @@ consumer(void *param)
 int
 main()
 {
+    sem_init(&empty, 0, BUFFER_SIZE);
+    sem_init(&full, 0, 0);
+    sem_init(&mutex, 0, 1);
+
     long int i;
 
     srand(time(NULL));
