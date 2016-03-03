@@ -50,7 +50,7 @@ insert_item(int item)
     sem_wait(&empty);
     sem_wait(&mutex);
     seedp = time(NULL);
-    sleep(rand_r(&seedp) % 5 + 1);
+    sleep(rand_r(&seedp) % 5 + 0);
 
     buffer.value[buffer.next_in] = item;
     buffer.next_in = (buffer.next_in + 1) % BUFFER_SIZE;
@@ -78,19 +78,7 @@ remove_item(int *item)
   
    sem_wait(&full);
    sem_wait(&mutex);
-
-    sleep(rand_r(&seedp) % 5 + 1);
-
-    *item = buffer.value[buffer.next_out];
-    buffer.value[buffer.next_out] = -1;
-    buffer.next_out = (buffer.next_out + 1) % BUFFER_SIZE;
-
-    sem_post(&mutex);    
-    sem_post(&empty);
-
-    return 0;
 }
-
 /**
  * producer - will iterate PRODUCER_ITERATION times and call the corresponding
  * function to insert an integer to the bounded buffer
