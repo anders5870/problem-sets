@@ -71,8 +71,6 @@ dec_mutex(void *arg __attribute__((unused)))
     return NULL;
 }
 
-volatile bool lock = false;
-
 /* volatile void swap( volatile int *a, volatile int *b) { */
 /*     int temp = *a; */
 /*     *a = *b; */
@@ -83,44 +81,45 @@ volatile bool lock = false;
 
     /* TODO 2: Use the compare and swap primitive to manipulate the shared
        variable */
+volatile int tmp;
 void* 
 inc_cas(void *arg __attribute__((unused)))
 {
 
 int i;
     for (i = 0; i < INC_ITERATIONS; i++) {
-        while(__sync_val_compare_and_swap(&lock, false , true) == true) {
-        //spin
-    }
+         tmp = counter;
+        /* while(__sync_bool_compare_and_swap(&counter, tmp , counter + 1) == false) { */
+        /*     tmp = counter; */
+        /* } */
         
-        counter++; 
+        while(!__sync_bool_compare_and_swap(&counter, tmp , counter + 1) ){
+            tmp = counter;
+        }
 
-        lock = false;
     }
 
     return NULL;
 }
-
-void *
+void* 
 dec_cas(void *arg __attribute__((unused)))
 {
- 
-    /* TODO 2: Use the compare and swap primitive to manipulate the shared
-     * variable */
-    int i;
-    for (i = 0; i < DEC_ITERATIONS; i++) {
-        while(__sync_val_compare_and_swap(&lock, false , true) == true) {
-        //spin
-    }
-        
-        counter--; 
 
-        lock = false;
+int i;
+    for (i = 0; i < INC_ITERATIONS; i++) {
+        tmp = counter;
+        /* while(__sync_bool_compare_and_swap(&counter, tmp ,counter - 1) == false) { */
+        /*     tmp = counter; */
+        /*  } */
+         while(!__sync_bool_compare_and_swap(&counter, tmp ,counter - 1)) {
+             tmp = counter;
+        }
+
+        
     }
 
     return NULL;
 }
-
 
 /* Access to the shared counter should be implemented using the atomic
  * instructions */
