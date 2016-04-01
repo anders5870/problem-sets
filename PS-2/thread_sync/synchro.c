@@ -81,19 +81,19 @@ dec_mutex(void *arg __attribute__((unused)))
 
     /* TODO 2: Use the compare and swap primitive to manipulate the shared
        variable */
-volatile int tmp;
+
 void* 
 inc_cas(void *arg __attribute__((unused)))
 {
 
 int i;
     for (i = 0; i < INC_ITERATIONS; i++) {
-         tmp = counter;
+         int tmp = counter;
         /* while(__sync_bool_compare_and_swap(&counter, tmp , counter + 1) == false) { */
         /*     tmp = counter; */
         /* } */
         
-        while(!__sync_bool_compare_and_swap(&counter, tmp , counter + 1) ){
+        while(!__sync_bool_compare_and_swap(&counter, tmp , tmp + 1) ){
             tmp = counter;
         }
 
@@ -106,12 +106,12 @@ dec_cas(void *arg __attribute__((unused)))
 {
 
 int i;
-    for (i = 0; i < INC_ITERATIONS; i++) {
-        tmp = counter;
+    for (i = 0; i < DEC_ITERATIONS; i++) {
+        int tmp = counter;
         /* while(__sync_bool_compare_and_swap(&counter, tmp ,counter - 1) == false) { */
         /*     tmp = counter; */
         /*  } */
-         while(!__sync_bool_compare_and_swap(&counter, tmp ,counter - 1)) {
+         while(!__sync_bool_compare_and_swap(&counter, tmp ,tmp - 1)) {
              tmp = counter;
         }
 
