@@ -1,0 +1,36 @@
+Persistent data type 
+--------------------
+
+A data type that never changes. When a data type is being modified,
+ a copy is made instead of changing the current data type. 
+It will result in multiple copies instead of changing the current data type.
+
+Immutable - An object that cannot be changed.
+Ephemeral - opposite of persistent.
+Partially persistent - only the most recent copy can be modified but all can be accessed
+Fully persistent - all copies can be modified and accessed
+
+Concurrency models
+------------------
+Software transactional memory(STM) - Is a concurrency control mechanism that solves the same 
+problem that lock-based synchronization solves. It is an alteranative.
+Futures -
+Actor model - 
+Coroutines -
+
+
+
+Random concepts
+---------------
+
+Subroutines - 
+First-class function - functions are values.
+First-class citizen - type, object, entity, or value that is generally used in many aspects
+ of the language. It is a basic building block.
+BEAM - erlang virtual machine
+Rust - made by Mozilla for web browsers. Is BLAZINGLY fast. Memory safety is one of the main
+ goals.
+Lazy evaluation -
+Currying - 
+Type inference -
+Type reconstruction - 
