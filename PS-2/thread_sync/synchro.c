@@ -10,6 +10,7 @@
 
 #include <stdio.h>     /* printf(), fprintf() */
 #include <stdlib.h>    /* abort() */
+#include <stdbool.h>
 #include <pthread.h>   /* pthread_... */
 #include "timing.h"
 
@@ -70,32 +71,31 @@ dec_mutex(void *arg __attribute__((unused)))
     return NULL;
 }
 
-volatile int lock = 0;
+volatile bool lock = false;
 
-volatile void swap( volatile int *a, volatile int *b) {
-    int temp = *a;
-    *a = *b;
-    *b = temp;
-}
+/* volatile void swap( volatile int *a, volatile int *b) { */
+/*     int temp = *a; */
+/*     *a = *b; */
+/*     *b = temp; */ 
+/* } */
 
-/* Access to the shared counter should be implemented using the compare & swap
- * instructions */
-void *
-inc_cas(void *arg __attribute__((unused)))
-{
-    volatile int key = 1;
-    int i;
+/* Access to the shared counter should be implemented u- */
 
     /* TODO 2: Use the compare and swap primitive to manipulate the shared
-     * variable */
+       variable */
+void* 
+inc_cas(void *arg __attribute__((unused)))
+{
 
+int i;
     for (i = 0; i < INC_ITERATIONS; i++) {
-        while(key)
-            swap(&lock, &key);
+        while(__sync_val_compare_and_swap(&lock, false , true) == true) {
+        //spin
+    }
         
         counter++; 
 
-        lock = 0;
+        lock = false;
     }
 
     return NULL;
@@ -104,16 +104,18 @@ inc_cas(void *arg __attribute__((unused)))
 void *
 dec_cas(void *arg __attribute__((unused)))
 {
-    int i;
-    volatile int key = 1;
+ 
     /* TODO 2: Use the compare and swap primitive to manipulate the shared
      * variable */
+    int i;
     for (i = 0; i < DEC_ITERATIONS; i++) {
-        while (key)
-            swap(&lock, &key);
-        counter--; 
+        while(__sync_val_compare_and_swap(&lock, false , true) == true) {
+        //spin
+    }
         
-        lock = 0;
+        counter--; 
+
+        lock = false;
     }
 
     return NULL;
@@ -126,11 +128,11 @@ void *
 inc_atomic(void *arg __attribute__((unused)))
 {
     int i;
-    int value= 0;
+
     /* TODO 3: Use atomic primitives to manipulate the shared variable */
+    
     for (i = 0; i < INC_ITERATIONS; i++) {
-         value = counter; 
-         counter = value++; 
+        __sync_add_and_fetch (&counter, 1);
          // 
     }
    
@@ -141,11 +143,9 @@ void *
 dec_atomic(void *arg __attribute__((unused)))
 {
     int i;
-      int value= 0; 
     /* TODO 3: Use atomic primitives to manipulate the shared variable */
     for (i = 0; i < DEC_ITERATIONS; i++) {
-         value = counter; 
-         counter = value--;
+        __sync_add_and_fetch (&counter, -1);
     }
 
     return NULL;
